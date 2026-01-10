@@ -1,0 +1,28 @@
+# Ignore everything by default
+/*
+
+# Allow source files
+!src/
+
+# Allow gradle
+!gradle/
+!gradlew
+!gradlew.bat
+!build.gradle
+!settings.gradle
+!gradle.properties
+
+# Allow git
+!.github/
+!.gitignore
+!.gitattributes
+
+# Allow other sub-projects
+build-logic/*
+
+!build-logic/build.gradle
+!build-logic/src
+
+# Allow other
+!README.md
+!LICENSE
