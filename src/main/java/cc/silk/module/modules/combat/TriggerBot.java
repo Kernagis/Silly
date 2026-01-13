@@ -6,6 +6,7 @@ import cc.silk.module.Module;
 import cc.silk.module.modules.misc.Teams;
 import cc.silk.module.setting.BooleanSetting;
 import cc.silk.module.setting.ModeSetting;
+import cc.silk.module.setting.NumberSetting;
 import cc.silk.module.setting.RangeSetting;
 import cc.silk.utils.math.MathUtils;
 import cc.silk.utils.math.TimerUtil;
@@ -19,6 +20,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.*;
+import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 
 public final class TriggerBot extends Module {
@@ -29,6 +31,8 @@ public final class TriggerBot extends Module {
 
     public static final ModeSetting cooldownMode = new ModeSetting("Cooldown Mode", "Smart", "Smart", "Strict", "None");
     public static final ModeSetting critMode = new ModeSetting("Criticals", "Strict", "None", "Strict");
+
+    public static final NumberSetting missChance = new NumberSetting("Miss Chance", 0, 100, 0, 1);
 
     public static final BooleanSetting ignorePassiveMobs = new BooleanSetting("No Passive", true);
     public static final BooleanSetting ignoreInvisible = new BooleanSetting("No Invisible", true);
@@ -55,7 +59,7 @@ public final class TriggerBot extends Module {
         super("Trigger Bot", "Automatically attacks targets when aimed", -1, Category.COMBAT);
         addSettings(
                 swordThreshold, axeThreshold, axePostDelay, reactionTime,
-                cooldownMode, critMode, ignorePassiveMobs, ignoreInvisible, ignoreTamed, ignoreCrystals,
+                cooldownMode, critMode, missChance, ignorePassiveMobs, ignoreInvisible, ignoreTamed, ignoreCrystals,
                 respectShields, useOnlySwordOrAxe, onlyWhenMouseDown, samePlayer
         );
     }
@@ -183,7 +187,13 @@ public final class TriggerBot extends Module {
 
 
     public void attack() {
-        ((MinecraftClientAccessor) mc).invokeDoAttack();
+        if (missChance.getValue() > 0 && Math.random() * 100 < missChance.getValue()) {
+            mc.player.swingHand(Hand.MAIN_HAND);
+            mc.player.resetLastAttackedTicks();
+        } else {
+            ((MinecraftClientAccessor) mc).invokeDoAttack();
+        }
+        
         if (samePlayer.getValue() && target != null) {
             lastTargetUUID = target.getUuidAsString();
             samePlayerTimer.reset();
