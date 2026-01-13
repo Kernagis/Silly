@@ -128,6 +128,23 @@ public class NewClickGUI extends Screen {
 
         boolean configDragging = configPanel != null && configPanel.isDragging();
 
+        if (cc.silk.module.modules.client.ClientSettingsModule.isPanelBlurEnabled()) {
+            for (CategoryPanel panel : panels) {
+                if (panel != draggedPanel) {
+                    panel.renderBlur(context.getMatrices(), alpha, scale, centerX, centerY);
+                }
+            }
+            if (configPanel != null && !configDragging) {
+                configPanel.renderBlur(context.getMatrices(), alpha, scale, centerX, centerY);
+            }
+            if (draggedPanel != null) {
+                draggedPanel.renderBlur(context.getMatrices(), alpha, scale, centerX, centerY);
+            }
+            if (configPanel != null && configDragging) {
+                configPanel.renderBlur(context.getMatrices(), alpha, scale, centerX, centerY);
+            }
+        }
+
         NanoVGRenderer.beginFrame();
 
         if (cc.silk.module.modules.client.ClientSettingsModule.isSnowEffectEnabled()) {

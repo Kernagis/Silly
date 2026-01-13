@@ -4,7 +4,9 @@ import cc.silk.SilkClient;
 import cc.silk.profiles.ProfileManager;
 import cc.silk.utils.render.nanovg.NanoVGRenderer;
 import cc.silk.utils.render.GuiGlowHelper;
+import cc.silk.utils.render.blur.BlurRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.math.MatrixStack;
 
 import java.awt.*;
 import java.io.File;
@@ -393,6 +395,31 @@ public class ConfigPanel {
         float transformedHeight = totalHeight * scale;
         
         GuiGlowHelper.drawGuiGlow(context, transformedX, transformedY, transformedWidth, transformedHeight, CORNER_RADIUS * scale);
+    }
+
+    public void renderBlur(MatrixStack matrices, float alpha, float scale, int centerX, int centerY) {
+        if (!cc.silk.module.modules.client.ClientSettingsModule.isPanelBlurEnabled()) {
+            return;
+        }
+
+        int displayedConfigs = Math.min(configs.size() + 1, MAX_VISIBLE_CONFIGS);
+        int totalHeight = HEADER_HEIGHT + (displayedConfigs * CONFIG_ENTRY_HEIGHT);
+
+        float transformedX = (x - centerX) * scale + centerX;
+        float transformedY = (y - centerY) * scale + centerY;
+        float transformedWidth = width * scale;
+        float transformedHeight = totalHeight * scale;
+
+        float blurRadius = cc.silk.module.modules.client.ClientSettingsModule.getPanelBlurRadius();
+
+        BlurRenderer.drawBlur(
+                matrices,
+                transformedX, transformedY,
+                transformedWidth, transformedHeight,
+                CORNER_RADIUS * scale,
+                new Color(255, 255, 255, (int)(255 * alpha)),
+                blurRadius
+        );
     }
     
     private static class ConfigEntry {

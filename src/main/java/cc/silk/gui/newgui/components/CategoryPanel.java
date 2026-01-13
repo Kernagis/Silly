@@ -4,7 +4,9 @@ import cc.silk.module.Category;
 import cc.silk.module.Module;
 import cc.silk.utils.render.nanovg.NanoVGRenderer;
 import cc.silk.utils.render.GuiGlowHelper;
+import cc.silk.utils.render.blur.BlurRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.math.MatrixStack;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -367,6 +369,43 @@ public class CategoryPanel {
         float transformedHeight = totalHeight * scale;
         
         GuiGlowHelper.drawGuiGlow(context, transformedX, transformedY, transformedWidth, transformedHeight, CORNER_RADIUS * scale);
+    }
+
+    public void renderBlur(MatrixStack matrices, float alpha, float scale, int centerX, int centerY) {
+        if (!cc.silk.module.modules.client.ClientSettingsModule.isPanelBlurEnabled()) {
+            return;
+        }
+
+        int visibleCount = 0;
+        for (ModuleButton button : moduleButtons) {
+            if (button.getSearchAlpha() > 0.01f) {
+                visibleCount++;
+            }
+        }
+
+        boolean scrollable = cc.silk.module.modules.client.ClientSettingsModule.isScrollable();
+        float expandProgress = 1f - collapseProgress;
+
+        int displayedModules = scrollable ? Math.min(visibleCount, MAX_VISIBLE_MODULES) : visibleCount;
+        int moduleAreaHeight = (int) ((displayedModules * MODULE_HEIGHT) * expandProgress);
+
+        int totalHeight = HEADER_HEIGHT + moduleAreaHeight;
+
+        float transformedX = (x - centerX) * scale + centerX;
+        float transformedY = (y - centerY) * scale + centerY;
+        float transformedWidth = width * scale;
+        float transformedHeight = totalHeight * scale;
+
+        float blurRadius = cc.silk.module.modules.client.ClientSettingsModule.getPanelBlurRadius();
+
+        BlurRenderer.drawBlur(
+                matrices,
+                transformedX, transformedY,
+                transformedWidth, transformedHeight,
+                CORNER_RADIUS * scale,
+                new Color(255, 255, 255, (int)(255 * alpha)),
+                blurRadius
+        );
     }
     
     public void renderSettingsPanelGlow(DrawContext context, float alpha) {
