@@ -3,8 +3,10 @@ package cc.silk.gui;
 import cc.silk.SilkClient;
 import cc.silk.module.Module;
 import cc.silk.utils.render.nanovg.NanoVGRenderer;
+import cc.silk.utils.render.shader.ShaderRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -176,8 +178,9 @@ public class KeybindsScreen extends Screen {
         float popupX = (width - POPUP_WIDTH) / 2f;
         float popupY = (height - POPUP_HEIGHT) / 2f;
         
-        NanoVGRenderer.drawRoundedRect(popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 8f, new Color(25, 25, 30, 250));
-        NanoVGRenderer.drawRoundedRectOutline(popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 8f, 2f, cc.silk.module.modules.client.KeybindsModule.getAccentColor());
+        MatrixStack matrices = new MatrixStack();
+        ShaderRenderer.drawRect(matrices, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 8f, new Color(25, 25, 30, 250));
+        ShaderRenderer.drawOutline(matrices, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 8f, cc.silk.module.modules.client.KeybindsModule.getAccentColor(), 2f);
         
         renderModulePopupHeader(popupX, popupY);
         renderPopupSearchBar(popupX, popupY);
@@ -197,7 +200,8 @@ public class KeybindsScreen extends Screen {
         float searchBarHeight = 35;
         float searchBarWidth = POPUP_WIDTH - 30;
         
-        NanoVGRenderer.drawRoundedRect(popupX + 15, searchBarY, searchBarWidth, searchBarHeight, 6f, new Color(35, 35, 40, 255));
+        MatrixStack matrices = new MatrixStack();
+        ShaderRenderer.drawRect(matrices, popupX + 15, searchBarY, searchBarWidth, searchBarHeight, 6f, new Color(35, 35, 40, 255));
         
         String displayText = searchQuery.isEmpty() ? "Search modules..." : searchQuery;
         Color textColor = searchQuery.isEmpty() ? TEXT_MUTED : TEXT_COLOR;
@@ -231,7 +235,8 @@ public class KeybindsScreen extends Screen {
         boolean isHovered = isMouseOverModuleEntry(popupX, moduleY, mouseX, mouseY);
         
         if (isHovered) {
-            NanoVGRenderer.drawRoundedRect(popupX + 20, moduleY, POPUP_WIDTH - 40, 30, 4f, cc.silk.module.modules.client.KeybindsModule.getKeyHoverColor());
+            MatrixStack matrices = new MatrixStack();
+            ShaderRenderer.drawRect(matrices, popupX + 20, moduleY, POPUP_WIDTH - 40, 30, 4f, cc.silk.module.modules.client.KeybindsModule.getKeyHoverColor());
         }
         
         NanoVGRenderer.drawText(module.getName(), popupX + 30, moduleY + 8, 11f, TEXT_COLOR);
@@ -268,11 +273,12 @@ public class KeybindsScreen extends Screen {
         
         Color keyColor = getKeyColor(boundModule, isHovered, isWaitingForKey);
         
-        NanoVGRenderer.drawRoundedRect(button.x, button.y, button.width, button.height, 4f, keyColor);
+        MatrixStack matrices = new MatrixStack();
+        ShaderRenderer.drawRect(matrices, button.x, button.y, button.width, button.height, 4f, keyColor);
         
         if (boundModule != null) {
-            NanoVGRenderer.drawRoundedRectOutline(button.x, button.y, button.width, button.height, 4f, 2f, 
-                cc.silk.module.modules.client.KeybindsModule.getKeyAssignedColor());
+            ShaderRenderer.drawOutline(matrices, button.x, button.y, button.width, button.height, 4f, 
+                cc.silk.module.modules.client.KeybindsModule.getKeyAssignedColor(), 2f);
         }
         
         renderKeyLabel(button);

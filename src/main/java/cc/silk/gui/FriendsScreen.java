@@ -2,10 +2,12 @@ package cc.silk.gui;
 
 import cc.silk.utils.friend.FriendManager;
 import cc.silk.utils.render.nanovg.NanoVGRenderer;
+import cc.silk.utils.render.shader.ShaderRenderer;
 import cc.silk.utils.render.GuiGlowHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 import java.awt.*;
@@ -99,8 +101,9 @@ public class FriendsScreen extends Screen {
         Color borderColor = new Color(BORDER_COLOR.getRed(), BORDER_COLOR.getGreen(), BORDER_COLOR.getBlue(),
                 (int) (255 * alpha));
 
-        NanoVGRenderer.drawRoundedRect(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 10f, panelBg);
-        NanoVGRenderer.drawRoundedRectOutline(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 10f, 1.5f, borderColor);
+        MatrixStack matrices = new MatrixStack();
+        ShaderRenderer.drawRect(matrices, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 10f, panelBg);
+        ShaderRenderer.drawOutline(matrices, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 10f, borderColor, 1.5f);
 
         renderHeader(panelX, panelY, alpha);
         renderSearchBar(panelX, panelY + HEADER_HEIGHT + PADDING, mouseX, mouseY, alpha);
@@ -128,8 +131,9 @@ public class FriendsScreen extends Screen {
         Color secondaryColor = new Color(TEXT_SECONDARY.getRed(), TEXT_SECONDARY.getGreen(), TEXT_SECONDARY.getBlue(),
                 headerAlpha);
 
-        NanoVGRenderer.drawRoundedRect(x, y, PANEL_WIDTH, HEADER_HEIGHT, 10f, headerBg);
-        NanoVGRenderer.drawRect(x, y + HEADER_HEIGHT - 1, PANEL_WIDTH, 1.5f, accentWithAlpha);
+        MatrixStack matrices = new MatrixStack();
+        ShaderRenderer.drawRect(matrices, x, y, PANEL_WIDTH, HEADER_HEIGHT, 10f, headerBg);
+        ShaderRenderer.drawRect(matrices, x, y + HEADER_HEIGHT - 1, PANEL_WIDTH, 1.5f, 0, accentWithAlpha);
 
         String title = "Friends";
         float titleSize = 14f;
@@ -155,9 +159,10 @@ public class FriendsScreen extends Screen {
                 ? new Color(accentColor.getRed(), accentColor.getGreen(), accentColor.getBlue(), bgAlpha)
                 : new Color(BORDER_COLOR.getRed(), BORDER_COLOR.getGreen(), BORDER_COLOR.getBlue(), bgAlpha);
 
-        NanoVGRenderer.drawRoundedRect(searchX, searchY, searchWidth, SEARCH_HEIGHT, 6f, searchBg);
-        NanoVGRenderer.drawRoundedRectOutline(searchX, searchY, searchWidth, SEARCH_HEIGHT, 6f,
-                searchFocused ? 1.5f : 1f, searchBorder);
+        MatrixStack matrices = new MatrixStack();
+        ShaderRenderer.drawRect(matrices, searchX, searchY, searchWidth, SEARCH_HEIGHT, 6f, searchBg);
+        ShaderRenderer.drawOutline(matrices, searchX, searchY, searchWidth, SEARCH_HEIGHT, 6f, searchBorder,
+                searchFocused ? 1.5f : 1f);
 
         String displayText = searchQuery.isEmpty() ? "Search..." : searchQuery;
         Color textColor = searchQuery.isEmpty()
@@ -214,7 +219,8 @@ public class FriendsScreen extends Screen {
                 hoveredPlayer = player;
                 Color hoverColor = new Color(HOVER_COLOR.getRed(), HOVER_COLOR.getGreen(), HOVER_COLOR.getBlue(),
                         bgAlpha);
-                NanoVGRenderer.drawRoundedRect(x + PADDING, entryY, PANEL_WIDTH - PADDING * 2,
+                MatrixStack matrices = new MatrixStack();
+                ShaderRenderer.drawRect(matrices, x + PADDING, entryY, PANEL_WIDTH - PADDING * 2,
                         PLAYER_ENTRY_HEIGHT, 6f, hoverColor);
             }
 
@@ -251,8 +257,9 @@ public class FriendsScreen extends Screen {
         Color scrollbarColor = new Color(accentColor.getRed(), accentColor.getGreen(), accentColor.getBlue(),
                 (int) (160 * alpha));
 
-        NanoVGRenderer.drawRoundedRect(x, y, 4, listHeight, 2f, scrollbarBg);
-        NanoVGRenderer.drawRoundedRect(x, scrollbarY, 4, scrollbarHeight, 2f, scrollbarColor);
+        MatrixStack matrices = new MatrixStack();
+        ShaderRenderer.drawRect(matrices, x, y, 4, listHeight, 2f, scrollbarBg);
+        ShaderRenderer.drawRect(matrices, x, scrollbarY, 4, scrollbarHeight, 2f, scrollbarColor);
     }
 
     private Color getAccentColor() {

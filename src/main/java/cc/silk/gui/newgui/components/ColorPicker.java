@@ -2,6 +2,8 @@ package cc.silk.gui.newgui.components;
 
 import cc.silk.module.setting.ColorSetting;
 import cc.silk.utils.render.nanovg.NanoVGRenderer;
+import cc.silk.utils.render.shader.ShaderRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 
 import java.awt.*;
 
@@ -86,8 +88,9 @@ public class ColorPicker {
         Color borderColor = new Color(BORDER_COLOR.getRed(), BORDER_COLOR.getGreen(), BORDER_COLOR.getBlue(),
                 panelAlpha);
 
-        NanoVGRenderer.drawRoundedRect(x, y, width, height, CORNER_RADIUS, panelBg);
-        NanoVGRenderer.drawRoundedRectOutline(x, y, width, height, CORNER_RADIUS, 1f, borderColor);
+        MatrixStack matrices = new MatrixStack();
+        ShaderRenderer.drawRect(matrices, x, y, width, height, CORNER_RADIUS, panelBg);
+        ShaderRenderer.drawOutline(matrices, x, y, width, height, CORNER_RADIUS, borderColor, 1f);
 
         float currentY = y + PADDING;
         int svSize = width - PADDING * 2;
@@ -203,8 +206,9 @@ public class ColorPicker {
         Color borderColor = new Color(ACCENT_COLOR.getRed(), ACCENT_COLOR.getGreen(), ACCENT_COLOR.getBlue(),
                 panelAlpha);
 
-        NanoVGRenderer.drawRoundedRect(previewX, previewY, previewSize, previewSize, 4f, displayColor);
-        NanoVGRenderer.drawRoundedRectOutline(previewX, previewY, previewSize, previewSize, 4f, 1.5f, borderColor);
+        MatrixStack matrices = new MatrixStack();
+        ShaderRenderer.drawRect(matrices, previewX, previewY, previewSize, previewSize, 4f, displayColor);
+        ShaderRenderer.drawOutline(matrices, previewX, previewY, previewSize, previewSize, 4f, borderColor, 1.5f);
 
         String hexText = String.format("#%02X%02X%02X%02X",
                 currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue(), currentColor.getAlpha());
@@ -231,16 +235,17 @@ public class ColorPicker {
                                       (int) (100 * alpha));
         Color textColor = new Color(200, 200, 200, panelAlpha);
         
-        NanoVGRenderer.drawRoundedRect(copyButtonX, buttonY, buttonWidth, BUTTON_HEIGHT, 3f, copyBg);
-        NanoVGRenderer.drawRoundedRectOutline(copyButtonX, buttonY, buttonWidth, BUTTON_HEIGHT, 3f, 1f, borderColor);
+        MatrixStack matrices = new MatrixStack();
+        ShaderRenderer.drawRect(matrices, copyButtonX, buttonY, buttonWidth, BUTTON_HEIGHT, 3f, copyBg);
+        ShaderRenderer.drawOutline(matrices, copyButtonX, buttonY, buttonWidth, BUTTON_HEIGHT, 3f, borderColor, 1f);
         
         String copyText = "Copy";
         float copyTextWidth = NanoVGRenderer.getTextWidth(copyText, 10f);
         NanoVGRenderer.drawText(copyText, copyButtonX + (buttonWidth - copyTextWidth) / 2f, buttonY + 6, 10f, textColor);
         
         Color pasteTextColor = clipboard == null ? new Color(100, 100, 110, panelAlpha) : textColor;
-        NanoVGRenderer.drawRoundedRect(pasteButtonX, buttonY, buttonWidth, BUTTON_HEIGHT, 3f, pasteBg);
-        NanoVGRenderer.drawRoundedRectOutline(pasteButtonX, buttonY, buttonWidth, BUTTON_HEIGHT, 3f, 1f, borderColor);
+        ShaderRenderer.drawRect(matrices, pasteButtonX, buttonY, buttonWidth, BUTTON_HEIGHT, 3f, pasteBg);
+        ShaderRenderer.drawOutline(matrices, pasteButtonX, buttonY, buttonWidth, BUTTON_HEIGHT, 3f, borderColor, 1f);
         
         String pasteText = "Paste";
         float pasteTextWidth = NanoVGRenderer.getTextWidth(pasteText, 10f);

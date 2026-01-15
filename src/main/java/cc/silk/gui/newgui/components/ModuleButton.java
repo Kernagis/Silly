@@ -3,6 +3,8 @@ package cc.silk.gui.newgui.components;
 import cc.silk.gui.newgui.GuiConstants;
 import cc.silk.module.Module;
 import cc.silk.utils.render.nanovg.NanoVGRenderer;
+import cc.silk.utils.render.shader.ShaderRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 
 import java.awt.*;
 
@@ -82,29 +84,32 @@ public class ModuleButton {
 
         float cornerRadius = isLastVisible ? 4f : 0f;
 
+        MatrixStack matrices = new MatrixStack();
         if (module.isEnabled()) {
             Color enabledBg = new Color(accentColor.getRed(), accentColor.getGreen(), accentColor.getBlue(),
                     (int) (255 * combinedAlpha));
             if (isLastVisible) {
-                NanoVGRenderer.drawRoundedRectVarying(x, y, buttonWidth, buttonHeight, 0f, 0f, cornerRadius, cornerRadius, enabledBg);
+                float[] radii = {0f, 0f, cornerRadius, cornerRadius};
+                ShaderRenderer.drawRectWithCustomRadius(matrices, x, y, buttonWidth, buttonHeight, radii, enabledBg);
             } else {
-                NanoVGRenderer.drawRect(x, y, buttonWidth, buttonHeight, enabledBg);
+                ShaderRenderer.drawRect(matrices, x, y, buttonWidth, buttonHeight, 0, enabledBg);
             }
         } else if (hoverAlpha > 0.01f) {
             float expandedHeight = buttonHeight * hoverAlpha;
             Color hoverBg = new Color(accentColor.getRed(), accentColor.getGreen(), accentColor.getBlue(),
                     (int) (60 * combinedAlpha));
             if (isLastVisible) {
-                NanoVGRenderer.drawRoundedRectVarying(x, y, buttonWidth, expandedHeight, 0f, 0f, cornerRadius, cornerRadius, hoverBg);
+                float[] radii = {0f, 0f, cornerRadius, cornerRadius};
+                ShaderRenderer.drawRectWithCustomRadius(matrices, x, y, buttonWidth, expandedHeight, radii, hoverBg);
             } else {
-                NanoVGRenderer.drawRect(x, y, buttonWidth, expandedHeight, hoverBg);
+                ShaderRenderer.drawRect(matrices, x, y, buttonWidth, expandedHeight, 0, hoverBg);
             }
         }
 
         if (matchesSearch && searchAlpha > 0.9f && !searchQuery.isEmpty()) {
             Color highlightBorder = new Color(accentColor.getRed(), accentColor.getGreen(), accentColor.getBlue(),
                     (int) (150 * combinedAlpha));
-            NanoVGRenderer.drawRect(x, y, 2, buttonHeight, highlightBorder);
+            ShaderRenderer.drawRect(matrices, x, y, 2, buttonHeight, 0, highlightBorder);
         }
 
         Color textColor;
